@@ -3,13 +3,76 @@
  * For full copyright and license information view LICENSE file distributed with this source code.
  */
 
+.ez-richtext-editable > * {
+    /*padding: 7px;*/
+    box-sizing: border-box;
+    border-top: 2px dotted transparent;
+    border-bottom: 2px dotted transparent;
+    transition: border ease 0.2s;
+    margin: 0.5em 0;
+	padding: 0.5em 0;
+}
+
 .ez-richtext-editable .is-block-focused,
 .ez-richtext-editable .cke_widget_wrapper.cke_widget_focused>.cke_widget_element {
     outline: 2px dashed #aaa;
-    outline-offset: 1px;
 }
 
 .ez-richtext-editable li {
     margin: 4px 0;
     list-style-position: inside;
+}
+
+.ez-draggable-handle {
+    display: none;
+}
+
+.ez-draggable-handle:hover {
+    cursor: move;
+}
+
+.is-being-dragged[draggable] {
+    opacity: 0.4;
+}
+
+[draggable] {
+	padding-top: 0;
+}
+
+[draggable] .ez-draggable-handle {
+    /*position: relative;*/
+    display: block;
+    width: 100%;
+    height: 0.5em;
+    left: 0;
+    width: 100%;
+    background: #eee;
+	transition: all ease 0.2s; /* TODO prefixes */
+	margin-top: -3px;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+[draggable] .ez-draggable-handle:hover {
+	background: #cdcdcd;
+}
+
+[draggable] .ez-draggable-handle:before {
+	content: '\E904';
+	display: block;
+	width: 100%;
+	text-align: center;
+	font-size: 140%;
+	line-height: 0.5;
+}
+
+
+.is-dragging-before {
+    border-top: 2px dotted black;
+}
+
+.is-dragging-after {
+    border-bottom: 2px dotted black;
 }

@@ -18,14 +18,21 @@ YUI.add('ez-alloyeditor-plugin-focusblock', function (Y) {
 
     function updateFocusedBlock(e) {
         var block = e.data.path.block,
-            oldBlock = findFocusedBlock(e.editor);
+            oldBlock = findFocusedBlock(e.editor),
+            editor = e.editor;
 
         if ( oldBlock && (!block || block.$ !== oldBlock.$) ) {
             oldBlock.removeClass(FOCUSED_CLASS);
+        } else {
+            oldBlock = undefined;
         }
         if ( block ) {
             block.addClass(FOCUSED_CLASS);
         }
+        editor.fire('focusedBlockUpdate', {
+            block: block,
+            oldBlock: oldBlock,
+        });
     }
 
     function clearFocusedBlock(e) {
@@ -33,6 +40,9 @@ YUI.add('ez-alloyeditor-plugin-focusblock', function (Y) {
 
         if ( oldBlock ) {
             oldBlock.removeClass(FOCUSED_CLASS);
+            e.editor.fire('focusedBlockUpdate', {
+                oldBlock: oldBlock,
+            });
         }
     }
 

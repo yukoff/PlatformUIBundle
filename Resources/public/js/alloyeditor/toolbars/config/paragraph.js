@@ -51,7 +51,10 @@ YUI.add('ez-alloyeditor-toolbar-config-paragraph', function (Y) {
 
             return (
                 nativeEditor.isSelectionEmpty() &&
-                path.contains('p')
+                path.contains('p') &&
+                !path.contains(function (node) {
+                    return node.hasClass('is-being-dragged');
+                })
             );
         },
 

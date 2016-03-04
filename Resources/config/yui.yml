@@ -50,6 +50,9 @@ system:
                 ez-alloyeditor-plugin-focusblock:
                     requires: ['ez-alloyeditor']
                     path: %ez_platformui.public_dir%/js/alloyeditor/plugins/focusblock.js
+                ez-alloyeditor-plugin-draggable:
+                    requires: ['ez-alloyeditor']
+                    path: %ez_platformui.public_dir%/js/alloyeditor/plugins/draggable.js
                 ez-alloyeditor-button-heading:
                     requires: ['ez-alloyeditor']
                     path: %ez_platformui.public_dir%/js/alloyeditor/buttons/heading.js
@@ -676,6 +679,7 @@ system:
                         - 'ez-alloyeditor-plugin-addcontent'
                         - 'ez-alloyeditor-plugin-removeblock'
                         - 'ez-alloyeditor-plugin-focusblock'
+                        - 'ez-alloyeditor-plugin-draggable'
                         - 'ez-alloyeditor-toolbar-config-link'
                         - 'ez-alloyeditor-toolbar-config-text'
                         - 'ez-alloyeditor-toolbar-config-table'

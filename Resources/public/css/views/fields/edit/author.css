@@ -32,3 +32,7 @@
     display: block;
     margin-top: 3em;
 }
+
+.ez-view-authoreditview.is-not-translatable .ez-field-sublabel {
+    opacity: 0.3;
+}

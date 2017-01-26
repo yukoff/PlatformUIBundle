@@ -18,7 +18,7 @@
     padding: 0 2em 0 0;
 }
 
-.ez-view-selectioneditview .ez-selection-values:hover {
+.ez-view-selectioneditview .ez-selection-values {
     cursor: pointer;
 }
 
@@ -64,4 +64,9 @@
 
 .ez-view-selectioneditview .ez-field-description {
     margin:  0 0 0 2.5em;
+}
+
+.ez-view-selectioneditview.is-not-translatable .ez-selection-values {
+    opacity: 0.3;
+    cursor: default;
 }

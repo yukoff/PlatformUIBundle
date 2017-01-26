@@ -71,3 +71,7 @@
 .ez-binarybase-help {
     margin: 0;
 }
+
+.is-not-translatable .ez-binarybase-content {
+    opacity: 0.3;
+}

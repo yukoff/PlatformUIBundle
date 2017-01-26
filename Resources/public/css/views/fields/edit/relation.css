@@ -86,3 +86,7 @@
 .ez-view-relationeditview .ez-field-description {
     margin: 0;
 }
+
+.ez-view-relationeditview.is-not-translatable .ez-relation-content {
+    opacity: 0.3;
+}

@@ -22,3 +22,7 @@
     width: 100%;
     max-width: 25em;
 }
+
+.ez-view-usereditview.is-not-translatable .ez-field-sublabel {
+    opacity: 0.3;
+}

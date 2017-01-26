@@ -20,3 +20,7 @@
 .ez-url-input-ui input {
     width: 100%;
 }
+
+.ez-view-urleditview.is-not-translatable .ez-field-sublabel {
+    opacity: 0.3;
+}

@@ -44,3 +44,7 @@
 .ez-view-relationlisteditview .ez-field-description {
     margin: 0;
 }
+
+.ez-view-relationlisteditview.is-not-translatable .ez-relationlist-contents {
+    opacity: 0.3;
+}

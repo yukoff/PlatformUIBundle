@@ -90,3 +90,22 @@
 .ez-standard-description.is-showing-description .ez-field-description {
     visibility: visible;
 }
+
+.ez-editfield-not-translatable {
+    display: none;
+}
+
+.is-not-translatable .ez-editfield-not-translatable {
+    margin-top: 0.2em;
+    font-size: 0.8em;
+    display:block;
+}
+
+.is-not-translatable .ez-fielddefinition-name {
+    opacity: 0.3;
+}
+
+.is-not-translatable .ez-editfield-not-translatable:before {
+    content: "\e61b";
+    padding-right: 0.4em;
+}

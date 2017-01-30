@@ -31,16 +31,23 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
     Y.eZ.UniversalDiscoveryFinderExplorerLevelView = Y.Base.create(viewName, Y.eZ.TemplateBasedView, [Y.eZ.AsynchronousView], {
         initializer: function () {
             var container = this.get('container');
+
+            this._watchingScroll = true;
             this._fireMethod = this._fireLocationSearch;
             this._watchAttribute = 'items';
             container.addClass(IS_LOADING);
 
-            this.after('searchResultListChange', this._setItems);
             this.on('itemsChange', function () {
-                this.set('scroll', true);
+                this._watchingScroll = true;
                 container.removeClass(IS_LOADING);
             });
-            container.on('scroll', this._handleScroll, this);
+            this.after('offsetChange', function () {
+                this._watchingScroll = false;
+                this.get('container').addClass(IS_LOADING);
+                this._fireLocationSearch();
+            });
+            container.plug(Y.Plugin.ScrollInfo);
+            container.scrollInfo.on('scrollDown', this._handleScroll, this);
 
             this.after('ownSelectedItemChange', function () {
                 if (!this.get('ownSelectedItem')) {
@@ -83,19 +90,28 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
          * Handles user scrolling to determine if it needs to load more items.
          *
          * @method _handleScroll
+         * @param {eventFacade} e
          * @protected
          */
-        _handleScroll: function (e) {
-            var isScrolledEnough = e.target._node.scrollHeight - e.target._node.scrollTop <= 2 * e.target._node.offsetHeight,
-                offset = this.get('offset'),
+        _handleScroll: function () {
+            var offset = this.get('offset'),
                 limit = this.get('limit');
-            
-            if (isScrolledEnough && limit + offset < this.get('searchResultCount') && this.get('scroll')) {
-                this.get('container').addClass(IS_LOADING);
-                this.set('scroll', false);
+
+            if (this._watchingScroll && this._hasScrolledEnough() && limit + offset < this.get('childCount')) {
                 this.set('offset', offset + limit);
-                this._fireLocationSearch();
             }
+        },
+
+        /**
+         * Determines if user has scrolled enough to try to load other items.
+         *
+         * @method _hasScrolledEnough
+         * @protected
+         */
+        _hasScrolledEnough: function () {
+            var container = this.get('container');
+
+            return container.get('scrollHeight') - container.get('scrollTop') <= 2 * container.get('offsetHeight');
         },
 
         /**
@@ -107,8 +123,8 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
         _fireLocationSearch: function () {
             this.fire('locationSearch', {
                 viewName: 'udwexplorerlevel-',
-                resultAttribute: 'searchResultList',
-                resultTotalCountAttribute: 'searchResultCount',
+                resultAttribute: 'items',
+                resultTotalCountAttribute: 'childCount',
                 loadContent: true,
                 loadContentType: true,
                 search: {
@@ -123,15 +139,16 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
         },
 
         /**
-         * `searchResultListChange` event handler. It sets items attribute with the results.
+         * items attribute setter. It sets items attribute with the results.
          *
          * @method _setItems
+         * @param {Array} newItems
          * @protected
          */
-        _setItems: function () {
+        _setItems: function (newItems) {
             var items = [];
 
-            Y.Array.each(this.get('searchResultList'), function (hit) {
+            Y.Array.each(newItems, function (hit) {
                 var location = hit.location,
                     contentType = hit.contentType,
                     content = hit.content,
@@ -144,10 +161,10 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
 
                 items.push(data);
             }, this);
-            if (this.get('items').length) {
-                this.set('items', this.get('items').concat(items));
+            if (this.get('items')) {
+                return  this.get('items').concat(items);
             } else {
-                this.set('items', items);
+                return items;
             }
         },
         
@@ -207,7 +224,9 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
              * @type Array
              */
             items: {
-                value: []
+                setter: function (resultList) {
+                    return this._setItems(resultList);
+                }
             },
 
             /**
@@ -270,26 +289,12 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview', function (Y) {
             },
 
             /**
-             * Flag to stop the scroll event handler
+             * The number of total search results.
              *
-             * @attribute scroll
-             * @type Boolean
-             */
-            scroll: {
-                value: true
-            },
-
-            /**
-             * The number of total search results. -1 means we are waiting for
-             * the results.
-             *
-             * @attribute searchResultCount
-             * @default -1
+             * @attribute childCount
              * @type Number
              */
-            searchResultCount: {
-                value: -1,
-            },
+            childCount: {},
         },
     });
 });

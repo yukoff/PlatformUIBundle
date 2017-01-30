@@ -19,8 +19,8 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
                 returns: this.locationId,
             });
             this.view = new Y.eZ.UniversalDiscoveryFinderExplorerLevelView({
-                container: '.container', 
-                items: this.items, 
+                container: '.container',
+                items: this.items,
                 parentLocation: this.parentLocationMock
             });
         },
@@ -93,9 +93,13 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
             this.view.set('active', true);
             this.view.set('loadingError', true);
             this.view.on('locationSearch', this.next(function () {
-                Assert.isNull(
+                Assert.isArray(
                     this.view.get('items'),
-                    "The `items` attribute should be resetted to null"
+                    "The `items` attribute should be an array"
+                );
+                Assert.isTrue(
+                    this.view.get('items').length === 0,
+                    "The `items` attribute should be an empty array"
                 );
                 Assert.isFalse(
                     this.view.get('loadingError'),
@@ -160,6 +164,8 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
         context.locationJson = {locationId: context.locationId};
         context.contentInfoJson = {};
         context.contentTypeJson = {};
+        context.limit = 50;
+        context.offset = 0;
         Mock.expect(context.parentLocationMock, {
             method: 'get',
             args: ['locationId'],
@@ -199,6 +205,8 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
             container: '.container',
             depth: 999,
             parentLocation: context.parentLocationMock,
+            offset: context.offset,
+            limit: context.limit,
         });
     };
 
@@ -218,7 +226,7 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
             var locationFound = false;
 
             this.view.set('ownSelectedItem', true);
-            this.view.set('searchResultList', this.searchResult);
+            this.view.set('items', this.searchResult);
             this.view.on('explorerNavigate', this.next(function (e) {
                 Y.Array.each(this.view.get('items'), function (item) {
                     if (item.location.get('locationId') == this.locationId) {
@@ -239,7 +247,7 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
 
             this.locationId = 86;
             this.view.set('ownSelectedItem', false);
-            this.view.set('searchResultList', this.searchResult);
+            this.view.set('items', this.searchResult);
             this.view.on('explorerNavigate', function (e) {
                 fireExplorerNavigate = true;
             }, this);
@@ -256,7 +264,7 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
 
             this.view.set('selectLocationId', this.location.get('locationId'));
             this.view.set('ownSelectedItem', true);
-            this.view.set('searchResultList', this.searchResult);
+            this.view.set('items', this.searchResult);
             this.view.on('explorerNavigate', function () {
                 fireExplorerNavigate = true;
             }, this);
@@ -273,7 +281,7 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
 
             this.view.set('selectLocationId', this.location.get('locationId'));
             this.view.set('ownSelectedItem', false);
-            this.view.set('searchResultList', this.searchResult);
+            this.view.set('items', this.searchResult);
             this.view.on('explorerNavigate', function () {
                 fireExplorerNavigate = true;
             }, this);
@@ -300,7 +308,7 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
         },
 
         "Should update items": function () {
-           this.view.set('searchResultList', this.searchResult);
+           this.view.set('items', this.searchResult);
 
             Assert.areSame(this.view.get('items')[0].location, this.result.location, 'item should have a location');
             Assert.areSame(this.view.get('items')[0].content, this.result.content, 'item should have a location');
@@ -401,23 +409,20 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
         "Should update offset and fire locationSearch when scolling to unload items ": function () {
             var container = this.view.get('container'),
                 locationSearchFired = false,
-                offset = 42,
-                limit = 69;
+                offset = this.view.get('offset');
 
-            this.view.set('offset', offset);
-            this.view.set('limit', limit);
-
-            this.view.on('*:locationSearch', function () {
+            this.view.on('*:locationSearch', Y.bind(function () {
                 Assert.isTrue(container.hasClass('is-loading'), 'Should have the loading icon');
                 locationSearchFired = true;
-            });
+            }), this);
 
             container.setStyle('margin-top', 5000);
-            this.view.set('searchResultCount', 999);
-            container.simulate('scroll');
-            Assert.areSame(this.view.get('offset'), offset + limit, 'offset should be updated');
+            this.view.set('childCount', 999);
+
+            container.scrollInfo.fire('scrollDown');
+
+            Assert.areSame(this.view.get('offset'), offset + this.view.get('limit'), 'offset should be updated');
             Assert.isTrue(locationSearchFired, 'locationSearch should have been fired');
-            
         },
 
         "Should concat the new loaded items": function () {
@@ -428,7 +433,7 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
                 itemsArray.push(this.result);
             }
             this.view.set('items', itemsArray);
-            this.view.set('searchResultList', this.searchResult);
+            this.view.set('items', this.searchResult);
 
             Assert.areSame(
                 this.view.get('items').length,
@@ -447,4 +452,4 @@ YUI.add('ez-universaldiscoveryfinderexplorerlevelview-tests', function (Y) {
     Y.Test.Runner.add(removeHighlightTest);
     Y.Test.Runner.add(loadMoreItemsTest);
 
-}, '', {requires: ['test', 'view', 'ez-universaldiscoveryfinderexplorerlevelview', 'node-screen', 'node-style', 'node-event-simulate']});
+}, '', {requires: ['test', 'view', 'ez-universaldiscoveryfinderexplorerlevelview', 'node-screen', 'node-style', 'node-scroll-info', 'node-event-simulate']});

@@ -10,7 +10,7 @@
     "require": {
         "ezsystems/platform-ui-assets-bundle": "^3.1.0",
         "ezsystems/repository-forms": "^1.2",
-        "ezsystems/ezpublish-kernel": "^6.6",
+        "ezsystems/ezpublish-kernel": "^6.6|^7.0",
         "ezsystems/ez-support-tools": "^0.1",
         "zetacomponents/system-information": "^1.1",
         "willdurand/js-translation-bundle": "^2.5",
@@ -28,7 +28,8 @@
         "_ezplatform_branch_for_behat_tests": "master",
         "branch-alias": {
             "dev-master": "1.9.x-dev",
-            "dev-tmp_ci_branch": "1.9.x-dev"
+            "dev-tmp_ci_branch": "1.9.x-dev",
+            "dev-fos_http_cache_2.0": "1.9.x-dev"
         }
     }
 }
